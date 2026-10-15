@@ -71,12 +71,14 @@ fun main() = application {
     }
 
     DisposableEffect(Unit) {
-        val focusListener = WindowFocusHider { windowVisible = false }
-        EventQueue.invokeLater {
-            AwtWindow.getWindows()
-                .filterIsInstance<java.awt.Frame>()
-                .firstOrNull { it.title == "神秘数字" }
-                ?.addWindowFocusListener(focusListener)
+        val focusListener = if (macOs) WindowFocusHider { windowVisible = false } else null
+        if (focusListener != null) {
+            EventQueue.invokeLater {
+                AwtWindow.getWindows()
+                    .filterIsInstance<java.awt.Frame>()
+                    .firstOrNull { it.title == "神秘数字" }
+                    ?.addWindowFocusListener(focusListener)
+            }
         }
         val tray = createTray(
             macOs = macOs,
@@ -106,10 +108,12 @@ fun main() = application {
             onExit = ::exitApplication,
         )
         onDispose {
-            AwtWindow.getWindows()
-                .filterIsInstance<java.awt.Frame>()
-                .firstOrNull { it.title == "神秘数字" }
-                ?.removeWindowFocusListener(focusListener)
+            if (focusListener != null) {
+                AwtWindow.getWindows()
+                    .filterIsInstance<java.awt.Frame>()
+                    .firstOrNull { it.title == "神秘数字" }
+                    ?.removeWindowFocusListener(focusListener)
+            }
             tray?.let { SystemTray.getSystemTray().remove(it) }
             viewModel.close()
         }
