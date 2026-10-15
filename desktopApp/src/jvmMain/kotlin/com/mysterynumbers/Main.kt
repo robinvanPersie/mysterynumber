@@ -30,6 +30,8 @@ import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import java.net.URI
 import java.awt.Desktop
+import java.awt.Font
+import java.awt.GraphicsEnvironment
 import java.awt.Window as AwtWindow
 import java.awt.event.WindowAdapter
 
@@ -135,10 +137,21 @@ private fun createTray(
 ): TrayIcon? {
     if (!SystemTray.isSupported()) return null
     val menu = if (macOs) null else java.awt.PopupMenu().apply {
-        add(java.awt.MenuItem("显示神秘数字").apply { addActionListener { onShow() } })
-        add(java.awt.MenuItem("立即刷新").apply { addActionListener { onRefresh() } })
+        val menuFont = windowsTrayMenuFont()
+        font = menuFont
+        add(java.awt.MenuItem("显示神秘数字").apply {
+            font = menuFont
+            addActionListener { onShow() }
+        })
+        add(java.awt.MenuItem("立即刷新").apply {
+            font = menuFont
+            addActionListener { onRefresh() }
+        })
         addSeparator()
-        add(java.awt.MenuItem("退出神秘数字").apply { addActionListener { onExit() } })
+        add(java.awt.MenuItem("退出神秘数字").apply {
+            font = menuFont
+            addActionListener { onExit() }
+        })
     }
     val trayIcon = TrayIcon(createTrayImage(), "神秘数字", menu).apply {
         isImageAutoSize = true
@@ -148,6 +161,16 @@ private fun createTray(
         SystemTray.getSystemTray().add(trayIcon)
         trayIcon
     }.getOrNull()
+}
+
+private fun windowsTrayMenuFont(): Font {
+    val installedFamilies = GraphicsEnvironment.getLocalGraphicsEnvironment()
+        .availableFontFamilyNames
+        .toSet()
+    val family = listOf("Microsoft YaHei UI", "Microsoft YaHei", "Segoe UI", "SansSerif")
+        .firstOrNull(installedFamilies::contains)
+        ?: Font.SANS_SERIF
+    return Font(family, Font.PLAIN, 13)
 }
 
 private fun createTrayImage(): BufferedImage {
