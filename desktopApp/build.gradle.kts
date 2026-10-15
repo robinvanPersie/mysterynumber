@@ -1,5 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.gradle.api.tasks.Exec
+import org.gradle.api.tasks.bundling.Zip
 
 plugins {
     alias(libs.plugins.kotlinJvm)
@@ -49,4 +50,20 @@ tasks.register<Exec>("packageNativeMacApp") {
     dependsOn("createDistributable")
     onlyIf { System.getProperty("os.name").contains("Mac", ignoreCase = true) }
     commandLine("bash", rootProject.file("tools/package-macos-native.sh").absolutePath)
+}
+
+// Package the complete Windows app directory so users can run it without an installer.
+tasks.register<Zip>("packagePortableZip") {
+    dependsOn("createDistributable")
+    onlyIf { System.getProperty("os.name").contains("Windows", ignoreCase = true) }
+
+    val appDirectory = layout.buildDirectory.dir("compose/binaries/main/app")
+    from(appDirectory) {
+        include("神秘数字/**")
+    }
+    destinationDirectory.set(layout.buildDirectory.dir("compose/binaries/main/portable"))
+    archiveBaseName.set("神秘数字")
+    archiveVersion.set("1.0.0")
+    archiveClassifier.set("portable")
+    includeEmptyDirs = true
 }

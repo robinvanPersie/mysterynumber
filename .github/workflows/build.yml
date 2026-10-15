@@ -31,8 +31,8 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew.bat :desktopApp:packageMsi --no-daemon
+      - run: ./gradlew.bat :desktopApp:packagePortableZip --no-daemon
       - uses: actions/upload-artifact@v4
         with:
           name: mystery-numbers-windows
-          path: desktopApp/build/compose/binaries/main/msi/*.msi
+          path: desktopApp/build/compose/binaries/main/portable/*.zip

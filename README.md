@@ -18,11 +18,16 @@ Kotlin Multiplatform + Compose Multiplatform Desktop 项目，目标平台为 ma
 ./gradlew :desktopApp:run
 ```
 
-## 构建安装包
+## 构建 macOS 包和 Windows 便携版
 
 ```bash
 ./gradlew :desktopApp:packageDmg
-./gradlew :desktopApp:packageMsi
 ```
 
-Windows 安装包将在 GitHub Actions 的 Windows runner 上构建，macOS 安装包将在 macOS runner 上构建。
+Windows 便携版会在 GitHub Actions 的 Windows runner 上构建：
+
+```bash
+./gradlew.bat :desktopApp:packagePortableZip
+```
+
+生成的 ZIP 内包含完整的 `神秘数字` 目录。解压后双击目录中的 `神秘数字.exe` 即可运行，不需要安装流程。macOS 安装包和 Windows 便携版都会通过 GitHub Actions 上传为构建产物。
