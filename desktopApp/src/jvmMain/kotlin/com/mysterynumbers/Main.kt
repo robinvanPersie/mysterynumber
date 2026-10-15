@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
-import com.mysterynumbers.market.MARKET_ENDPOINT
 import com.mysterynumbers.market.MarketViewModel
 import com.mysterynumbers.NetworkMarketRepository
 import java.awt.EventQueue
@@ -59,10 +58,10 @@ fun main() = application {
                     .background(Color(0xD9D9D9D9))
                     .border(1.dp, Color(0xFFF5F5F5), RoundedCornerShape(20.dp)),
             ) {
-                App(viewModel, ::openEndpoint, ::exitApplication)
+                App(viewModel, { openEndpoint(viewModel.currentEndpoint()) }, ::exitApplication)
             }
         } else {
-            App(viewModel, ::openEndpoint, ::exitApplication)
+            App(viewModel, { openEndpoint(viewModel.currentEndpoint()) }, ::exitApplication)
         }
     }
 
@@ -128,8 +127,8 @@ private class WindowFocusHider(private val hide: () -> Unit) : WindowAdapter() {
 
 private fun isMacOs(): Boolean = System.getProperty("os.name").contains("Mac", ignoreCase = true)
 
-private fun openEndpoint() {
-    runCatching { Desktop.getDesktop().browse(URI(MARKET_ENDPOINT)) }
+private fun openEndpoint(endpoint: String) {
+    runCatching { Desktop.getDesktop().browse(URI(endpoint)) }
 }
 
 private fun createTray(

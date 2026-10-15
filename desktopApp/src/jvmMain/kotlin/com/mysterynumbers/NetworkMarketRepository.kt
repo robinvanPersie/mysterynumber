@@ -1,6 +1,6 @@
 package com.mysterynumbers
 
-import com.mysterynumbers.market.MARKET_ENDPOINT
+import com.mysterynumbers.market.MarketItem
 import com.mysterynumbers.market.MarketQuote
 import com.mysterynumbers.market.MarketRepository
 import com.mysterynumbers.market.decodeMarketResponse
@@ -9,10 +9,11 @@ import java.net.HttpURLConnection
 import java.net.URI
 
 class NetworkMarketRepository : MarketRepository {
-    override suspend fun fetchQuotes(): List<MarketQuote> {
-        val bytes = fetchBytes(URI(MARKET_ENDPOINT).toURL())
+    override suspend fun fetchQuotes(items: List<MarketItem>): List<MarketQuote> {
+        val endpoint = com.mysterynumbers.market.buildMarketEndpoint(items)
+        val bytes = fetchBytes(URI(endpoint).toURL())
         val text = decodeMarketResponse(bytes) ?: error("无法解码行情响应")
-        return parseMarketResponse(text).also { if (it.isEmpty()) error("行情响应格式异常") }
+        return parseMarketResponse(text, items).also { if (it.isEmpty()) error("行情响应格式异常") }
     }
 
     private fun fetchBytes(url: java.net.URL): ByteArray {

@@ -52,6 +52,12 @@ tasks.register<Exec>("packageNativeMacApp") {
     commandLine("bash", rootProject.file("tools/package-macos-native.sh").absolutePath)
 }
 
+tasks.register<Exec>("packageNativeMacDmg") {
+    dependsOn("packageNativeMacApp")
+    onlyIf { System.getProperty("os.name").contains("Mac", ignoreCase = true) }
+    commandLine("bash", rootProject.file("tools/package-macos-native-dmg.sh").absolutePath)
+}
+
 // Package the complete Windows app directory so users can run it without an installer.
 tasks.register<Zip>("packagePortableZip") {
     dependsOn("createDistributable")

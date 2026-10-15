@@ -21,8 +21,10 @@ Kotlin Multiplatform + Compose Multiplatform Desktop 项目，目标平台为 ma
 ## 构建 macOS 包和 Windows 便携版
 
 ```bash
-./gradlew :desktopApp:packageDmg
+./gradlew :desktopApp:packageNativeMacDmg
 ```
+
+macOS 必须使用 `packageNativeMacApp` 或 `packageNativeMacDmg`，这两个任务会编译 `macosApp` 下的原生 SwiftUI 菜单栏程序。不要使用 Compose 的 `createDistributable` 或 `packageDmg` 作为 macOS 最终包，它们生成的是 Compose Desktop 应用。
 
 Windows 便携版会在 GitHub Actions 的 Windows runner 上构建：
 
