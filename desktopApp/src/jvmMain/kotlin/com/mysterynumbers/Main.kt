@@ -30,7 +30,6 @@ import javax.imageio.ImageIO
 import java.net.URI
 import java.awt.Desktop
 import java.awt.Font
-import java.awt.GraphicsEnvironment
 import java.awt.Window as AwtWindow
 import java.awt.event.WindowAdapter
 
@@ -167,13 +166,24 @@ private fun createTray(
 }
 
 private fun windowsTrayMenuFont(): Font {
-    val installedFamilies = GraphicsEnvironment.getLocalGraphicsEnvironment()
-        .availableFontFamilyNames
-        .toSet()
-    val family = listOf("Microsoft YaHei UI", "Microsoft YaHei", "Segoe UI", "SansSerif")
-        .firstOrNull(installedFamilies::contains)
-        ?: Font.SANS_SERIF
-    return Font(family, Font.PLAIN, 13)
+    // AWT tray menus use the native Windows menu peer. Checking only the
+    // enumerated family names can select a logical font that has no CJK glyphs
+    // in a packaged JRE, which renders Chinese labels as empty squares.
+    val sample = "显示神秘数字立即刷新退出"
+    val candidates = listOf(
+        "Microsoft YaHei UI",
+        "Microsoft YaHei",
+        "SimSun",
+        "NSimSun",
+        "宋体",
+        "Dialog",
+        Font.SANS_SERIF,
+    )
+    return candidates
+        .asSequence()
+        .map { Font(it, Font.PLAIN, 13) }
+        .firstOrNull { it.canDisplayUpTo(sample) == -1 }
+        ?: Font(Font.SANS_SERIF, Font.PLAIN, 13)
 }
 
 private fun createTrayImage(): BufferedImage {
